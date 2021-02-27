@@ -1,0 +1,42 @@
+sudo: false
+
+language: php
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 8.0
+      env: WP_VERSION=nightly
+    - php: 8.0
+      env: WP_VERSION=latest
+    - php: 7.4
+      env: WP_VERSION=latest
+    - php: 7.4 # minimum requirements
+      env: WP_VERSION=5.5 # minimum requirements
+  allow_failures:
+    - env: WP_VERSION=latest
+    - env: WP_VERSION=nightly
+
+env:
+  global:
+    - SNIFF=1
+
+cache:
+  apt: false
+  directories:
+    - "$HOME/.npm" # Keep the npm cache around to speed up installs.
+
+before_script:
+  - composer self-update
+  - composer install --prefer-source --no-interaction
+
+script:
+  # Search for PHP syntax errors.
+  - find -L $TRAVIS_BUILD_DIR -path $TRAVIS_BUILD_DIR/vendor -prune -o -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l
+  # Run PHPCS.
+  - if [[ "$SNIFF" == "1" ]]; then vendor/bin/phpcs $TRAVIS_BUILD_DIR ; fi

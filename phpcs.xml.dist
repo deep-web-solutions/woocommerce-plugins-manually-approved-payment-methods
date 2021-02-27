@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<ruleset name="PHP_CS DWS WordPress">
+    <description>Sniff for the coding standards of the DWS WordPress code.</description>
+
+    <!-- Check all PHP files in directory tree by default. -->
+	<arg name="extensions" value="php"/>
+	<file>.</file>
+
+    <!-- Ignore custom spacing in function comments. -->
+    <rule ref="Squiz.Commenting.FunctionComment">
+        <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType"/>
+    </rule>
+
+    <!-- Ignore end char rule since it conflicts with PhpStorm's code folding regions. -->
+    <rule ref="Squiz.Commenting.InlineComment">
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+    </rule>
+
+    <!-- Since all files contain classes, a file comment seems extraneous. -->
+    <rule ref="Squiz.Commenting.FileComment">
+        <exclude name="Squiz.Commenting.FileComment.Missing"/>
+    </rule>
+
+    <!-- Minimum PHP and WP versions. -->
+    <config name="testVersion" value="7.4-"/>
+    <config name="minimum_supported_wp_version" value="5.5"/>
+
+	<!-- WordPress coding standards. -->
+    <rule ref="WordPress">
+        <!-- Exclude as plugin adheres to the PSR-4 standard. -->
+        <exclude name="WordPress.Files.FileName"/>
+    </rule>
+
+    <!-- Check that the proper text domain(s) is used everywhere. -->
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="dws-manually-approved-payment-methods-for-woocommerce"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Check that all things are properly prefixed. -->
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="dws_"/>
+                <element value="dws_wc_mapm_"/>
+                <element value="DeepWebSolutions"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Don't require space before colon in control structures alternative syntax. -->
+    <rule ref="WordPress.WhiteSpace.ControlStructureSpacing">
+        <properties>
+            <property name="space_before_colon" value="forbidden"/>
+        </properties>
+    </rule>
+
+    <!-- Ignore certain folders. -->
+    <exclude-pattern>*/bin/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+
+    <!-- Ignore index.php files since they're just empty. -->
+    <exclude-pattern>*/index.php</exclude-pattern>
+</ruleset>

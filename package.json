@@ -1,0 +1,22 @@
+{
+  "name": "dws-manually-approved-payment-methods-for-woocommerce",
+  "version": "1.0.0",
+  "title": "Manually Approved Payment Methods for WooCommerce",
+  "author": "Deep Web Solutions GmbH",
+  "homepage": "https://github.com/deep-web-solutions/woocommerce-plugins-manually-approved-payment-methods#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deep-web-solutions/woocommerce-plugins-manually-approved-payment-methods.git"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/deep-web-solutions/woocommerce-plugins-manually-approved-payment-methods/issues"
+  },
+  "devDependencies": {
+    "grunt": "^1.3.0",
+    "grunt-potomo": "^3.5.0",
+    "grunt-wp-i18n": "^1.0.3",
+    "load-grunt-tasks": "^5.1.0",
+    "time-grunt": "^2.0.0"
+  }
+}

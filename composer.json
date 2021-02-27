@@ -1,0 +1,59 @@
+{
+  "name": "deep-web-solutions/manually-approved-payment-methods-for-woocommerce",
+  "type": "wordpress-plugin",
+
+  "description": "A WooCommerce extension which allows shop managers to hide payment methods from customers that haven't been manually granted access yet.",
+  "keywords": ["wordpress", "plugins", "Deep Web Solutions", "woocommerce", "payment methods"],
+  "homepage": "https://www.deep-web-solutions.com",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Antonius Hegyes",
+      "email": "a.hegyes@deep-web-solutions.com",
+      "homepage": "https://www.linkedin.com/in/tonyhegyes",
+      "role": "Developer"
+    },
+    {
+      "name": "Contributors",
+      "homepage": "https://github.com/deep-web-solutions/woocommerce-plugins-manually-approved-payment-methods/graphs/contributors"
+    }
+  ],
+
+  "require": {
+    "deep-web-solutions/wp-framework-bootstrapper": "^1.0.0",
+    "deep-web-solutions/wp-framework-helpers": "dev-master",
+    "deep-web-solutions/wp-framework-utilities": "dev-master",
+    "deep-web-solutions/wp-framework-core": "dev-master",
+    "deep-web-solutions/wp-framework-settings": "dev-master",
+    "deep-web-solutions/wp-framework-woocommerce": "dev-master"
+  },
+  "require-dev": {
+    "phpmd/phpmd": "*",
+    "squizlabs/php_codesniffer": "^3.5",
+    "dealerdirect/phpcodesniffer-composer-installer": "*",
+    "object-calisthenics/phpcs-calisthenics-rules": "*",
+    "phpcompatibility/php-compatibility": "*",
+    "phpcompatibility/phpcompatibility-wp": "*",
+    "wp-coding-standards/wpcs": "*"
+  },
+
+  "autoload": {
+    "psr-4": {
+      "DeepWebSolutions\\Plugins\\WooCommerce\\ManuallyApprovedPaymentMethods\\": "src/includes"
+    }
+  },
+
+  "extra": {
+    "mozart": {
+      "dep_namespace": "DeepWebSolutions\\Plugins\\WooCommerce\\ManuallyApprovedPaymentMethods\\Dependencies\\",
+      "dep_directory": "/src/includes/Dependencies/",
+      "classmap_directory": "/classes/dependencies/",
+      "classmap_prefix": "DWS_WC_LPM_",
+      "delete_vendor_directories": true,
+      "exclude_packages": [
+        "psr/container",
+        "psr/log"
+      ]
+    }
+  }
+}
