@@ -1,10 +1,15 @@
 <?php
 
-namespace DeepWebSolutions\Plugins\WooCommerce\ManuallyApprovedPaymentMethods;
+namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods;
 
-use DeepWebSolutions\Framework\Core\Abstracts\PluginFunctionality;
-use DeepWebSolutions\Framework\Core\Abstracts\PluginRoot;
-use DeepWebSolutions\Framework\Core\Traits\Setup\Inactive\DependenciesAdminNotice;
+use DeepWebSolutions\Framework\Core\Actions\Foundations\Setupable\States\SetupableInactiveTrait;
+use DeepWebSolutions\Framework\Core\Actions\Setupable\RunnablesOnSetupTrait;
+use DeepWebSolutions\Framework\Core\PluginComponents\AbstractPluginRoot;
+use DeepWebSolutions\Framework\Utilities\Actions\Initializable\InitializeDependenciesChecker;
+use DeepWebSolutions\Framework\Utilities\Dependencies\Checkers\HandlerChecker;
+use DeepWebSolutions\Framework\Utilities\Dependencies\DependenciesCheckerInterface;
+use DeepWebSolutions\Framework\Utilities\Dependencies\DependenciesServiceAwareTrait;
+use DeepWebSolutions\Framework\Utilities\Dependencies\Handlers\WPPluginsHandler;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,33 +21,46 @@ defined( 'ABSPATH' ) || exit;
  * @author  Antonius Hegyes <a.hegyes@deep-web-solutions.com>
  * @package DeepWebSolutions\WC-Plugins\ManuallyApprovedPaymentMethods
  */
-final class Plugin extends PluginRoot {
-	use DependenciesAdminNotice;
+final class Plugin extends AbstractPluginRoot {
+	// region TRAITS
 
-	// region DEPENDENCIES
-
-	/**
-	 * Register WooCommerce 4.5.2+ as a mandatory dependency for the whole plugin.
-	 *
-	 * @since   1.0.0
-	 * @version 1.0.0
-	 *
-	 * @return  array[]
-	 */
-	public function get_required_active_plugins(): array {
-		return array(
-			'woocommerce/woocommerce.php' => array(
-				'name'            => 'WooCommerce',
-				'min_version'     => '4.5.2',
-				'version_checker' => function() {
-					return get_option( 'woocommerce_db_version', '0.0.0' ); },
-			),
-		);
-	}
+	use DependenciesServiceAwareTrait;
+	use InitializeDependenciesChecker;
+	use SetupableInactiveTrait;
+	use RunnablesOnSetupTrait;
 
 	// endregion
 
 	// region INHERITED METHODS
+
+	/**
+	 * Initializes the dependencies checker.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return  HandlerChecker
+	 */
+	protected function register_dependencies_checker(): DependenciesCheckerInterface {
+		$dependencies_checker = new HandlerChecker();
+
+		$dependencies_checker->register_handler(
+			new WPPluginsHandler(
+				$this->get_instance_name(),
+				array(
+					'woocommerce/woocommerce.php' => array(
+						'name'            => 'WooCommerce',
+						'min_version'     => '4.5.2',
+						'version_checker' => function() {
+							return get_option( 'woocommerce_db_version', '0.0.0' );
+						},
+					),
+				)
+			)
+		);
+
+		return $dependencies_checker;
+	}
 
 	/**
 	 * Register plugin components.
@@ -50,14 +68,16 @@ final class Plugin extends PluginRoot {
 	 * @since   1.0.0
 	 * @version 1.0.0
 	 *
-	 * @see     PluginFunctionality::register_children_functionalities()
+	 * @see     Functionality::register_children_functionalities()
 	 *
 	 * @return  array
 	 */
-	protected function define_children(): array {
-		$plugin_components = array();
+	protected function get_di_container_children(): array {
+		$plugin_components = array(
+			Admin\Settings::class,
+		);
 
-		return array_merge( parent::define_children(), $plugin_components );
+		return array_merge( parent::get_di_container_children(), $plugin_components );
 	}
 
 	// endregion
@@ -70,9 +90,9 @@ final class Plugin extends PluginRoot {
 	 * @since   1.0.0
 	 * @version 1.0.0
 	 *
-	 * @see     PluginRoot::set_plugin_file_path()
+	 * @see     PluginBase::set_plugin_file_path()
 	 */
-	protected function set_plugin_file_path(): void {
+	protected function initialize_plugin_file_path(): void {
 		$this->plugin_file_path = DWS_WC_MAPM_BASE_PATH . 'bootstrap.php';
 	}
 

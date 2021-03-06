@@ -35,20 +35,15 @@
     <rule ref="WordPress.WP.I18n">
         <properties>
             <property name="text_domain" type="array">
-                <element value="dws-manually-approved-payment-methods-for-woocommerce"/>
+                <element value="dws-mapm-for-woocommerce"/>
             </property>
         </properties>
     </rule>
 
-    <!-- Check that all things are properly prefixed. -->
-    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
-        <properties>
-            <property name="prefixes" type="array">
-                <element value="dws_"/>
-                <element value="dws_wc_mapm_"/>
-                <element value="DeepWebSolutions"/>
-            </property>
-        </properties>
+    <!-- All content is namespaced properly and hooks are auto-generated. This sniff is a false positive. -->
+    <rule ref="WordPress.NamingConventions">
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals"/>
+        <exclude name="WordPress.NamingConventions.ValidHookName"/>
     </rule>
 
     <!-- Don't require space before colon in control structures alternative syntax. -->

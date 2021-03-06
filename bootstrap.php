@@ -9,6 +9,8 @@
  * @copyright           2021 Deep Web Solutions
  * @license             GPL-3.0-or-later
  *
+ * @noinspection PhpMissingReturnTypeInspection
+ *
  * @wordpress-plugin
  * Plugin Name:             Manually Approved Payment Methods for WooCommerce
  * Description:             A WooCommerce extension which allows shop managers to hide payment methods from customers that haven't been manually granted access yet.
@@ -19,16 +21,17 @@
  * Author URI:              https://www.deep-web-solutions.com
  * License:                 GPL-3.0+
  * License URI:             http://www.gnu.org/licenses/gpl-3.0.txt
- * Text Domain:             dws-manually-approved-payment-methods-for-woocommerce
+ * Text Domain:             dws-mapm-for-woocommerce
  * Domain Path:             /src/languages
  * WC requires at least:    4.5
  * WC tested up to:         5.0
  */
 
-namespace DeepWebSolutions\Plugins;
+namespace DeepWebSolutions\WC_Plugins;
 
-use DeepWebSolutions\Framework\Core\Abstracts\Exceptions\Initialization\FunctionalityInitializationFailure;
-use DeepWebSolutions\Plugins\WooCommerce\ManuallyApprovedPaymentMethods\Plugin;
+use DeepWebSolutions\Framework\Core\PluginComponents\Exceptions\FunctionalityInitFailureException;
+use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Admin\Settings;
+use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Plugin;
 use DI\Container;
 use DI\ContainerBuilder;
 use function DeepWebSolutions\Framework\dws_wp_framework_check_php_wp_requirements_met;
@@ -77,7 +80,7 @@ define( 'DWS_WC_MAPM_PLUGIN_MIN_WP', '5.5' );
  *
  * @return  Plugin
  */
-function dws_wc_mapm_plugin(): Plugin {
+function dws_wc_mapm_plugin() {
 	/* @noinspection PhpUnhandledExceptionInspection */
 	return dws_wc_mapm_plugin_container()->get( Plugin::class );
 }
@@ -90,14 +93,15 @@ function dws_wc_mapm_plugin(): Plugin {
  *
  * @param   string  $environment    The environment rules that the container should be initialized on.
  *
- * @throws  \Exception      Thrown if initializing the container fails.
+ * @noinspection PhpDocMissingThrowsInspection
  *
  * @return  Container
  */
-function dws_wc_mapm_plugin_container( $environment = 'prod' ): Container {
+function dws_wc_mapm_plugin_container( $environment = 'prod' ) {
 	static $container = null;
 
 	if ( is_null( $container ) ) {
+		/* @noinspection PhpUnhandledExceptionInspection */
 		$container = ( new ContainerBuilder() )
 			->addDefinitions( __DIR__ . "/config_{$environment}.php" )
 			->build();
@@ -111,8 +115,10 @@ function dws_wc_mapm_plugin_container( $environment = 'prod' ): Container {
  *
  * @since   1.0.0
  * @version 1.0.0
+ *
+ * @return  FunctionalityInitFailureException|null
  */
-function dws_wc_mapm_plugin_initialize(): ?FunctionalityInitializationFailure {
+function dws_wc_mapm_plugin_initialize() {
 	return dws_wc_mapm_plugin()->initialize();
 }
 
@@ -122,7 +128,7 @@ function dws_wc_mapm_plugin_initialize(): ?FunctionalityInitializationFailure {
  * @since   1.0.0
  * @version 1.0.0
  */
-function dws_wc_mapm_plugin_activate(): void {
+function dws_wc_mapm_plugin_activate() {
 	if ( is_null( dws_wc_mapm_plugin_initialize() ) ) {
 		dws_wc_mapm_plugin()->activate();
 	}
@@ -134,7 +140,7 @@ function dws_wc_mapm_plugin_activate(): void {
  * @since   1.0.0
  * @version 1.0.0
  */
-function dws_wc_mapm_plugin_uninstall(): void {
+function dws_wc_mapm_plugin_uninstall() {
 	if ( is_null( dws_wc_mapm_plugin_initialize() ) ) {
 		dws_wc_mapm_plugin()->uninstall();
 	}

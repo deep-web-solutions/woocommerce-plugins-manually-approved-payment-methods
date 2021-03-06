@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 		echo wp_kses(
 			sprintf(
 				/* translators: %s: Manually Approved Payment Methods for WooCommerce Plugin Name */
-				__( 'It seems like <strong>%s</strong> is corrupted. Please reinstall!', 'dws-manually-approved-payment-methods-for-woocommerce' ),
+				__( 'It seems like <strong>%s</strong> is corrupted. Please reinstall!', 'dws-mapm-for-woocommerce' ),
 				DWS_WC_MAPM_PLUGIN_NAME
 			),
 			array(

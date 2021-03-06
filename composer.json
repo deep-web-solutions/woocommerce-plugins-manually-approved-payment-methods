@@ -22,10 +22,12 @@
   "require": {
     "deep-web-solutions/wp-framework-bootstrapper": "^1.0.0",
     "deep-web-solutions/wp-framework-helpers": "dev-master",
+    "deep-web-solutions/wp-framework-foundations": "dev-master",
     "deep-web-solutions/wp-framework-utilities": "dev-master",
     "deep-web-solutions/wp-framework-core": "dev-master",
     "deep-web-solutions/wp-framework-settings": "dev-master",
-    "deep-web-solutions/wp-framework-woocommerce": "dev-master"
+    "deep-web-solutions/wp-framework-woocommerce": "dev-master",
+    "wpmetabox/meta-box": "^5.3.8"
   },
   "require-dev": {
     "phpmd/phpmd": "*",
@@ -39,11 +41,17 @@
 
   "autoload": {
     "psr-4": {
-      "DeepWebSolutions\\Plugins\\WooCommerce\\ManuallyApprovedPaymentMethods\\": "src/includes"
-    }
+      "DeepWebSolutions\\WC_Plugins\\ManuallyApprovedPaymentMethods\\": "src/includes"
+    },
+    "files": [
+      "vendor/wpmetabox/meta-box/meta-box.php"
+    ]
   },
 
   "extra": {
+    "installer-paths": {
+      "vendor/wpmetabox/meta-box/": ["wpmetabox/meta-box"]
+    },
     "mozart": {
       "dep_namespace": "DeepWebSolutions\\Plugins\\WooCommerce\\ManuallyApprovedPaymentMethods\\Dependencies\\",
       "dep_directory": "/src/includes/Dependencies/",
