@@ -5,7 +5,7 @@ namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods;
 use DeepWebSolutions\Framework\Core\Actions\Foundations\Setupable\States\SetupableInactiveTrait;
 use DeepWebSolutions\Framework\Core\Actions\Setupable\RunnablesOnSetupTrait;
 use DeepWebSolutions\Framework\Core\PluginComponents\AbstractPluginRoot;
-use DeepWebSolutions\Framework\Utilities\Actions\Initializable\InitializeDependenciesChecker;
+use DeepWebSolutions\Framework\Utilities\Actions\Initializable\InitializeDependenciesCheckerTrait;
 use DeepWebSolutions\Framework\Utilities\Dependencies\Checkers\HandlerChecker;
 use DeepWebSolutions\Framework\Utilities\Dependencies\DependenciesCheckerInterface;
 use DeepWebSolutions\Framework\Utilities\Dependencies\DependenciesServiceAwareTrait;
@@ -25,7 +25,7 @@ final class Plugin extends AbstractPluginRoot {
 	// region TRAITS
 
 	use DependenciesServiceAwareTrait;
-	use InitializeDependenciesChecker;
+	use InitializeDependenciesCheckerTrait;
 	use SetupableInactiveTrait;
 	use RunnablesOnSetupTrait;
 
@@ -41,7 +41,7 @@ final class Plugin extends AbstractPluginRoot {
 	 *
 	 * @return  HandlerChecker
 	 */
-	protected function register_dependencies_checker(): DependenciesCheckerInterface {
+	public function get_dependencies_checker(): DependenciesCheckerInterface {
 		$dependencies_checker = new HandlerChecker();
 
 		$dependencies_checker->register_handler(
@@ -73,11 +73,12 @@ final class Plugin extends AbstractPluginRoot {
 	 * @return  array
 	 */
 	protected function get_di_container_children(): array {
-		$plugin_components = array(
-			Admin\Settings::class,
+		return array_merge(
+			parent::get_di_container_children(),
+			array(
+				Admin\Settings::class,
+			)
 		);
-
-		return array_merge( parent::get_di_container_children(), $plugin_components );
 	}
 
 	// endregion

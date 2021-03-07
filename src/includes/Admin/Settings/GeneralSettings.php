@@ -6,7 +6,6 @@ use DeepWebSolutions\Framework\Core\PluginComponents\AbstractPluginFunctionality
 use DeepWebSolutions\Framework\Helpers\DataTypes\Strings;
 use DeepWebSolutions\Framework\Helpers\WordPress\Hooks\HooksHelpersAwareInterface;
 use DeepWebSolutions\Framework\Settings\Actions\Initializable\InitializeValidatedSettingsServiceTrait;
-use DeepWebSolutions\Framework\Settings\Actions\SettingsActionResponse;
 use DeepWebSolutions\Framework\Settings\Actions\Setupable\SetupSettingsTrait;
 use DeepWebSolutions\Framework\Settings\SettingsService;
 use DeepWebSolutions\Framework\Settings\SettingsServiceAwareInterface;
@@ -45,6 +44,7 @@ class GeneralSettings extends AbstractPluginFunctionality implements HooksHelper
 	 *
 	 * @since   1.0.0
 	 * @version 1.0.0
+	 * @noinspection PhpUndefinedMethodInspection
 	 *
 	 * @param   HooksService    $hooks_service      Instance of the hooks service.
 	 */
@@ -83,9 +83,9 @@ class GeneralSettings extends AbstractPluginFunctionality implements HooksHelper
 	 *
 	 * @param   string  $field_id   The ID of the settings' field to retrieve.
 	 *
-	 * @return  SettingsActionResponse
+	 * @return  mixed
 	 */
-	public function get_option_value( string $field_id ): SettingsActionResponse {
+	public function get_option_value( string $field_id ) {
 		return $this->get_option_value_trait( 'woocommerce', $field_id, 'dws-mapm-for-woocommerce_general', array() );
 	}
 
@@ -96,28 +96,28 @@ class GeneralSettings extends AbstractPluginFunctionality implements HooksHelper
 	/**
 	 * Retrieves a setting field's value in raw format.
 	 *
-	 * @param   SettingsActionResponse      $value      The value so far.
-	 * @param   string                      $field_id   The database ID of the setting.
+	 * @param   mixed       $value      The value so far.
+	 * @param   string      $field_id   The database ID of the setting.
 	 *
-	 * @return  SettingsActionResponse
+	 * @return  mixed
 	 */
-	public function maybe_get_raw_setting( SettingsActionResponse $value, string $field_id ): SettingsActionResponse {
+	public function maybe_get_raw_setting( $value, string $field_id ) {
 		return Strings::starts_with( $field_id, 'general_' )
-			? new SettingsActionResponse( $this->get_option_value( substr( $field_id, 8 ) ) )
+			? $this->get_option_value( substr( $field_id, 8 ) )
 			: $value;
 	}
 
 	/**
 	 * Retrieves a setting field's value and runs it through a validation callback.
 	 *
-	 * @param   SettingsActionResponse  $value      The value so far.
-	 * @param   string                  $field_id    The database ID of the setting.
+	 * @param   mixed       $value      The value so far.
+	 * @param   string      $field_id    The database ID of the setting.
 	 *
-	 * @return  SettingsActionResponse
+	 * @return  mixed
 	 */
-	public function maybe_get_validated_setting( SettingsActionResponse $value, string $field_id ): SettingsActionResponse {
+	public function maybe_get_validated_setting( $value, string $field_id ) {
 		return Strings::starts_with( $field_id, 'general_' )
-			? new SettingsActionResponse( $this->get_general_option_value( substr( $field_id, 8 ) ) )
+			? $this->get_general_option_value( substr( $field_id, 8 ) )
 			: $value;
 	}
 

@@ -6,8 +6,6 @@ use DeepWebSolutions\Framework\Foundations\Plugin\PluginInterface;
 use DeepWebSolutions\Framework\Helpers\WordPress\Request;
 use DeepWebSolutions\Framework\Settings\Handlers\MetaBox_Handler;
 use DeepWebSolutions\Framework\Settings\SettingsService;
-use DeepWebSolutions\Framework\Utilities\AdminNotices\Stores\OptionsStoreAdmin;
-use DeepWebSolutions\Framework\Utilities\AdminNotices\Stores\UserMetaStoreAdmin;
 use DeepWebSolutions\Framework\Utilities\Hooks\Handlers\HooksHandler;
 use DeepWebSolutions\Framework\Utilities\Hooks\HooksService;
 use DeepWebSolutions\Framework\Utilities\Logging\LoggingService;
@@ -47,14 +45,6 @@ return array(
 			return new LoggingService( $plugin, $loggers, Request::has_debug() );
 		}
 	),
-
-	'admin_notices_key'         => factory(
-		function( PluginInterface $plugin ) {
-			return '_dws_admin_notices_' . $plugin->get_plugin_safe_slug();
-		}
-	),
-	OptionsStoreAdmin::class    => autowire()->constructorParameter( 'option_key', get( 'admin_notices_key' ) ),
-	UserMetaStoreAdmin::class   => autowire()->constructorParameter( 'meta_key', get( 'admin_notices_key' ) ),
 
 	// Core
 	Installation::class         => autowire()->constructorParameter( 'component_name', 'Installation' ),

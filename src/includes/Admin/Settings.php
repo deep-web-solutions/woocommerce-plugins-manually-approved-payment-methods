@@ -81,10 +81,10 @@ class Settings extends AbstractPluginFunctionality implements SettingsServiceAwa
 	 *
 	 * @param   string  $field_id   The ID of the field within the settings to read from the database.
 	 *
-	 * @return  SettingsActionResponse
+	 * @return  mixed
 	 */
-	public function get_option_value( string $field_id ): SettingsActionResponse {
-		return apply_filters( $this->get_hook_tag( 'option' ), new SettingsActionResponse(), $field_id );
+	public function get_option_value( string $field_id ) {
+		return apply_filters( $this->get_hook_tag( 'option' ), null, $field_id );
 	}
 
 	/**
@@ -97,10 +97,10 @@ class Settings extends AbstractPluginFunctionality implements SettingsServiceAwa
 	 *
 	 * @param   string  $field_id   The ID of the field within the settings to read from the database.
 	 *
-	 * @return  SettingsActionResponse
+	 * @return  mixed
 	 */
-	public function get_validated_option_value( string $field_id ): SettingsActionResponse {
-		return apply_filters( $this->get_hook_tag( 'validated-option' ), new SettingsActionResponse(), $field_id );
+	public function get_validated_option_value( string $field_id ) {
+		return apply_filters( $this->get_hook_tag( 'validated-option' ), null, $field_id );
 	}
 
 	// endregion
