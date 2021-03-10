@@ -35,12 +35,16 @@ return array(
 	),
 	LoggingService::class       => factory(
 		function( PluginInterface $plugin ) {
-			$min_log_level = Request::has_debug() ? WC_Log_Levels::DEBUG : WC_Log_Levels::ERROR;
-			$handler       = new WC_Log_Handler_File();
-			$loggers       = array(
-				'framework' => new DWS_WC_Logger( 'framework', array( $handler ), $min_log_level ),
-				'plugin'    => new DWS_WC_Logger( 'plugin', array( $handler ), $min_log_level ),
-			);
+			$loggers = array();
+
+			if ( class_exists( 'WC_Log_Levels' ) ) { // in case the WC plugin is not active
+				$min_log_level = Request::has_debug() ? WC_Log_Levels::DEBUG : WC_Log_Levels::ERROR;
+				$handler       = new WC_Log_Handler_File();
+				$loggers       = array(
+					'framework' => new DWS_WC_Logger( 'framework', array( $handler ), $min_log_level ),
+					'plugin'    => new DWS_WC_Logger( 'plugin', array( $handler ), $min_log_level ),
+				);
+			}
 
 			return new LoggingService( $plugin, $loggers, Request::has_debug() );
 		}

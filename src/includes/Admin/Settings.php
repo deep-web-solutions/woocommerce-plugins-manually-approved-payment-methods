@@ -2,10 +2,11 @@
 
 namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Admin;
 
+use DeepWebSolutions\Framework\Core\Actions\Installable;
+use DeepWebSolutions\Framework\Core\Actions\InstallableInterface;
 use DeepWebSolutions\Framework\Core\PluginComponents\AbstractPluginFunctionality;
 use DeepWebSolutions\Framework\Foundations\Helpers\HooksHelpersTrait;
 use DeepWebSolutions\Framework\Settings\Actions\Initializable\InitializeValidatedSettingsServiceTrait;
-use DeepWebSolutions\Framework\Settings\Actions\SettingsActionResponse;
 use DeepWebSolutions\Framework\Settings\Actions\Setupable\SetupSettingsTrait;
 use DeepWebSolutions\Framework\Settings\SettingsService;
 use DeepWebSolutions\Framework\Settings\SettingsServiceAwareInterface;
@@ -23,7 +24,7 @@ defined( 'ABSPATH' ) || exit;
  * @author  Antonius Hegyes <a.hegyes@deep-web-solutions.com>
  * @package DeepWebSolutions\WC-Plugins\ManuallyApprovedPaymentMethods\Admin
  */
-class Settings extends AbstractPluginFunctionality implements SettingsServiceAwareInterface, ValidationServiceAwareInterface {
+class Settings extends AbstractPluginFunctionality implements InstallableInterface, SettingsServiceAwareInterface, ValidationServiceAwareInterface {
 	// region TRAITS
 
 	use HooksHelpersTrait;
@@ -101,6 +102,77 @@ class Settings extends AbstractPluginFunctionality implements SettingsServiceAwa
 	 */
 	public function get_validated_option_value( string $field_id ) {
 		return apply_filters( $this->get_hook_tag( 'validated-option' ), null, $field_id );
+	}
+
+	// endregion
+
+	// region INSTALLATION
+
+	/**
+	 * Doesn't do anything yet.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return  Installable\InstallFailureException|null
+	 */
+	public function install(): ?Installable\InstallFailureException {
+		// currently not applicable
+		return null;
+	}
+
+	/**
+	 * Performs any required manipulation to make old settings compatible with new ones.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+	 *
+	 * @param   string  $current_version    Currently installed version.
+	 *
+	 * @return  Installable\UpdateFailureException|null
+	 */
+	public function update( string $current_version ): ?Installable\UpdateFailureException {
+		// currently not applicable
+		return null;
+	}
+
+	/**
+	 * Removes all the plugin's options from the database.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+	 *
+	 * @param   string  $current_version    Currently installed version.
+	 *
+	 * @return  Installable\UninstallFailureException|null
+	 */
+	public function uninstall( string $current_version ): ?Installable\UninstallFailureException {
+		$remove_data = dws_wc_mapm_get_validated_option( 'general_remove-data-uninstall' );
+
+		if ( true === $remove_data ) {
+			$result = $GLOBALS['wpdb']->query( "DELETE FROM {$GLOBALS['wpdb']->options} WHERE option_name LIKE 'dws-mapm-for-woocommerce_%'" ); // phpcs:ignore
+			if ( false === $result ) {
+				return new Installable\UninstallFailureException( _x( 'Failed to delete the plugin options from the database', 'settings', 'dws-mapm-for-woocommerce' ) );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns the current version of the options structure.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return  string
+	 */
+	public function get_current_version(): string {
+		return '1.0.0';
 	}
 
 	// endregion

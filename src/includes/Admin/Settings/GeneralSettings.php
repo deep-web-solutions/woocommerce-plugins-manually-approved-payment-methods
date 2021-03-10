@@ -171,6 +171,14 @@ class GeneralSettings extends AbstractPluginFunctionality implements HooksHelper
 					'options'  => $this->get_supported_options( 'boolean' ),
 					'desc_tip' => _x( 'Adds controls for granting access to each locked payment method separately to each unpaid order. Access is granted only for the respective order.', 'settings', 'dws-mapm-for-woocommerce' ),
 				),
+				'remove-data-uninstall'  => array(
+					'title'    => _x( 'Remove all data on uninstallation?', 'settings', 'dws-mapm-for-woocommerce' ),
+					'type'     => 'select',
+					'class'    => 'wc-enhanced-select',
+					'default'  => $this->get_default_value( 'general/remove-data-uninstall' ),
+					'options'  => $this->get_supported_options( 'boolean' ),
+					'desc_tip' => _x( 'If enabled, the plugin will remove all database data when removed and you will need to reconfigure everything if you install it again at a later time.', 'settings', 'dws-mapm-for-woocommerce' ),
+				),
 			)
 		);
 	}
@@ -194,6 +202,7 @@ class GeneralSettings extends AbstractPluginFunctionality implements HooksHelper
 				break;
 			case 'override-per-user':
 			case 'override-per-order':
+			case 'remove-data-uninstall':
 				$value = $this->validate_value( $value, "general/{$field_id}", ValidationTypesEnum::BOOLEAN );
 				break;
 		}

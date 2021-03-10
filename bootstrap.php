@@ -148,6 +148,7 @@ function dws_wc_mapm_plugin_uninstall() {
 
 // Start plugin initialization if system requirements check out.
 if ( dws_wp_framework_check_php_wp_requirements_met( DWS_WC_MAPM_PLUGIN_MIN_PHP, DWS_WC_MAPM_PLUGIN_MIN_WP ) ) {
+	include __DIR__ . DIRECTORY_SEPARATOR . 'functions.php';
 	add_action( 'plugins_loaded', __NAMESPACE__ . '\dws_wc_mapm_plugin_initialize' );
 
 	register_activation_hook( __FILE__, __NAMESPACE__ . '\dws_wc_mapm_plugin_activate' );
