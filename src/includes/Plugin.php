@@ -80,6 +80,7 @@ final class Plugin extends AbstractPluginRoot {
 			array(
 				Settings::class,
 				Permissions::class,
+				Integrations::class,
 				LockManager::class,
 			)
 		);

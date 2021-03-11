@@ -56,6 +56,24 @@ class UserRole extends AbstractUnlockStrategy {
 		$hooks_service->add_filter( $general_settings->get_hook_tag( 'option', array( 'general' ) ), $this, 'filter_validated_option_value', 10, 2 );
 	}
 
+	/**
+	 * Grants full access to all available payment methods if the user has certain roles.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   array       $locked_methods_ids     IDs of WC payment gateways that are currently still locked.
+	 * @param   int|null    $user_id                The ID of the user for which access should be granted.
+	 *
+	 * @return  array
+	 */
+	protected function filter_available_payment_methods( array $locked_methods_ids, ?int $user_id = null ): array {
+		$roles   = dws_wc_mapm_get_validated_general_option( 'full-access-user-roles' );
+		$user_id = $user_id ?? get_current_user_id();
+
+		return Users::has_roles( $roles, $user_id, 'or' ) ? array() : $locked_methods_ids;
+	}
+
 	// endregion
 
 	// region HOOKS
@@ -112,24 +130,6 @@ class UserRole extends AbstractUnlockStrategy {
 		}
 
 		return $value;
-	}
-
-	/**
-	 * Grants full access to all available payment methods if the user has certain roles.
-	 *
-	 * @since   1.0.0
-	 * @version 1.0.0
-	 *
-	 * @param   array       $locked_methods_ids     IDs of WC payment gateways that are currently still locked.
-	 * @param   int|null    $user_id                The ID of the user for which access should be granted.
-	 *
-	 * @return  array
-	 */
-	public function maybe_grant_payment_methods_access( array $locked_methods_ids, ?int $user_id = null ): array {
-		$roles   = dws_wc_mapm_get_validated_general_option( 'full-access-user-roles' );
-		$user_id = $user_id ?? get_current_user_id();
-
-		return Users::has_roles( $roles, $user_id, 'or' ) ? array() : $locked_methods_ids;
 	}
 
 	// endregion

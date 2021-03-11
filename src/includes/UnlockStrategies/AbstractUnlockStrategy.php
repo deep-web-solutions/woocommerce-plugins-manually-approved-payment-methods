@@ -65,7 +65,29 @@ abstract class AbstractUnlockStrategy extends AbstractPluginFunctionality {
 	 *
 	 * @return  array
 	 */
-	abstract public function maybe_grant_payment_methods_access( array $locked_methods_ids ): array;
+	public function maybe_grant_payment_methods_access( array $locked_methods_ids ): array {
+		if ( ! $this->is_disabled() && $this->is_active() ) {
+			$locked_methods_ids = $this->filter_available_payment_methods( ...func_get_args() );
+		}
+
+		return $locked_methods_ids;
+	}
+
+	// endregion
+
+	// region HELPERS
+
+	/**
+	 * Grants access to payment methods based on the current strategy.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   array   $locked_methods_ids     IDs of WC payment gateways that are currently still locked.
+	 *
+	 * @return  array
+	 */
+	abstract protected function filter_available_payment_methods( array $locked_methods_ids ): array;
 
 	// endregion
 }

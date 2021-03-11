@@ -54,6 +54,28 @@ class UserMeta extends AbstractUnlockStrategy {
 		$hooks_service->add_action( 'edit_user_profile_update', $this, 'save_locked_payment_methods_fields' );
 	}
 
+	/**
+	 * Grants access to payment methods based on user meta settings.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   array       $locked_methods_ids     IDs of WC payment gateways that are currently still locked.
+	 * @param   int|null    $user_id                The ID of the user for which access should be granted.
+	 *
+	 * @return  array
+	 */
+	protected function filter_available_payment_methods( array $locked_methods_ids, ?int $user_id = null ): array {
+		$user_id = $user_id ?? get_current_user_id();
+		foreach ( $locked_methods_ids as $key => $locked_method_id ) {
+			if ( 'yes' === get_user_meta( $user_id, "dws_mapm_grant_access_{$locked_method_id}", true ) ) {
+				unset( $locked_methods_ids[ $key ] );
+			}
+		}
+
+		return $locked_methods_ids;
+	}
+
 	// endregion
 
 	// region HOOKS
@@ -85,7 +107,7 @@ class UserMeta extends AbstractUnlockStrategy {
 		<table class="form-table" id="dws-manually-approveable-payment-methods">
 			<tbody>
 			<?php
-			foreach ( $locked_methods_ids as $locked_method_id ): // phpcs:ignore
+			foreach ( $locked_methods_ids as $locked_method_id ) : // phpcs:ignore
 				$field_id = "dws_mapm_grant_access_{$locked_method_id}";
 				?>
 				<tr>
@@ -136,28 +158,6 @@ class UserMeta extends AbstractUnlockStrategy {
 				? update_user_meta( $user_id, $key, 'yes' )
 				: delete_user_meta( $user_id, $key );
 		}
-	}
-
-	/**
-	 * Grants access to payment methods based on user meta settings.
-	 *
-	 * @since   1.0.0
-	 * @version 1.0.0
-	 *
-	 * @param   array       $locked_methods_ids     IDs of WC payment gateways that are currently still locked.
-	 * @param   int|null    $user_id                The ID of the user for which access should be granted.
-	 *
-	 * @return  array
-	 */
-	public function maybe_grant_payment_methods_access( array $locked_methods_ids, ?int $user_id = null ): array {
-		$user_id = $user_id ?? get_current_user_id();
-		foreach ( $locked_methods_ids as $key => $locked_method_id ) {
-			if ( 'yes' === get_user_meta( $user_id, "dws_mapm_grant_access_{$locked_method_id}", true ) ) {
-				unset( $locked_methods_ids[ $key ] );
-			}
-		}
-
-		return $locked_methods_ids;
 	}
 
 	// endregion

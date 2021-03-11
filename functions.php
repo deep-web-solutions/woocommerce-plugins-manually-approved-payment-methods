@@ -1,5 +1,6 @@
 <?php
 
+use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Integrations\WC_Memberships_Integration;
 use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Settings;
 use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\UnlockStrategies\OrderMeta;
 use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\UnlockStrategies\UserMeta;
@@ -116,10 +117,27 @@ function dws_wc_mapm_check_payment_methods_access_by_user_meta( array $locked_me
  *
  * @return  array|null
  */
-function dws_wc_mapm_check_payment_methods_access_by_user_role( array $locked_methods_ids, int $user_id ): ?array {
+function dws_wc_mapm_check_payment_methods_access_by_user_roles( array $locked_methods_ids, int $user_id ): ?array {
 	try {
 		$user_role_checker = dws_wc_mapm_plugin_container()->get( UserRole::class );
 		return $user_role_checker->maybe_grant_payment_methods_access( $locked_methods_ids, $user_id );
+	} catch ( Exception $exception ) {
+		return null;
+	}
+}
+
+/**
+ * Removes the payment methods IDs from a given array if the user has been unlocked for those based on their active memberships.
+ *
+ * @param   array   $locked_methods_ids     List of locked payment methods.
+ * @param   int     $user_id                The ID of the user to check.
+ *
+ * @return  array|null
+ */
+function dws_wc_mapm_check_payment_methods_access_by_wc_memberships( array $locked_methods_ids, int $user_id ): ?array {
+	try {
+		$memberships_checker = dws_wc_mapm_plugin_container()->get( WC_Memberships_Integration::class );
+		return $memberships_checker->maybe_grant_payment_methods_access( $locked_methods_ids, $user_id );
 	} catch ( Exception $exception ) {
 		return null;
 	}
@@ -138,8 +156,9 @@ function dws_wc_mapm_check_payment_methods_access_by_user_role( array $locked_me
  * @return  array|null
  */
 function dws_wc_mapm_check_payment_methods_access_for_user( array $locked_methods_ids, int $user_id ): ?array {
-	$locked_methods_ids = dws_wc_mapm_check_payment_methods_access_by_user_role( $locked_methods_ids, $user_id );
+	$locked_methods_ids = dws_wc_mapm_check_payment_methods_access_by_user_roles( $locked_methods_ids, $user_id );
 	$locked_methods_ids = dws_wc_mapm_check_payment_methods_access_by_user_meta( $locked_methods_ids, $user_id );
+	$locked_methods_ids = dws_wc_mapm_check_payment_methods_access_by_wc_memberships( $locked_methods_ids, $user_id );
 
 	return apply_filters( dws_wc_mapm_plugin()->get_hook_tag( 'check_payment_methods_access_for_user' ), $locked_methods_ids, $user_id );
 }

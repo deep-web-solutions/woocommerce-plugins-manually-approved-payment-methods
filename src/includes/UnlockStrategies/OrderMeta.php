@@ -83,6 +83,32 @@ class OrderMeta extends AbstractUnlockStrategy {
 		);
 	}
 
+	/**
+	 * Grants access to payment methods based on order settings.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   array       $locked_methods_ids     IDs of WC payment gateways that are currently still locked.
+	 * @param   int|null    $order_id               The ID of the order for which access should be granted.
+	 *
+	 * @return  array
+	 */
+	protected function filter_available_payment_methods( array $locked_methods_ids, ?int $order_id = null ): array {
+		if ( $order_id || is_checkout_pay_page() ) {
+			$order_id = $order_id ?: $GLOBALS['wp']->query_vars['order-pay']; // phpcs:ignore
+			foreach ( $locked_methods_ids as $key => $locked_method_id ) {
+				$value = $this->get_field_value( 'meta-box', "_dws_mapm_grant_access_{$locked_method_id}", $order_id, array() );
+
+				if ( true === Validation::validate_boolean( $value, false ) ) {
+					unset( $locked_methods_ids[ $key ] );
+				}
+			}
+		}
+
+		return $locked_methods_ids;
+	}
+
 	// endregion
 
 	// region HOOKS
@@ -107,32 +133,6 @@ class OrderMeta extends AbstractUnlockStrategy {
 		foreach ( $locked_methods_ids as $locked_method_id ) {
 			$this->register_locked_payment_method_field( $locked_method_id, $locked_ids_customer, $gateways );
 		}
-	}
-
-	/**
-	 * Grants access to payment methods based on order settings.
-	 *
-	 * @since   1.0.0
-	 * @version 1.0.0
-	 *
-	 * @param   array       $locked_methods_ids     IDs of WC payment gateways that are currently still locked.
-	 * @param   int|null    $order_id               The ID of the order for which access should be granted.
-	 *
-	 * @return  array
-	 */
-	public function maybe_grant_payment_methods_access( array $locked_methods_ids, ?int $order_id = null ): array {
-		if ( $order_id || is_checkout_pay_page() ) {
-			$order_id = $order_id ?: $GLOBALS['wp']->query_vars['order-pay']; // phpcs:ignore
-			foreach ( $locked_methods_ids as $key => $locked_method_id ) {
-				$value = $this->get_field_value( 'meta-box', "_dws_mapm_grant_access_{$locked_method_id}", $order_id, array() );
-
-				if ( true === Validation::validate_boolean( $value, false ) ) {
-					unset( $locked_methods_ids[ $key ] );
-				}
-			}
-		}
-
-		return $locked_methods_ids;
 	}
 
 	// endregion
