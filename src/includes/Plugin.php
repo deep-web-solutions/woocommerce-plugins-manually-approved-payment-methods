@@ -5,6 +5,7 @@ namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods;
 use DeepWebSolutions\Framework\Core\Actions\Foundations\Setupable\States\SetupableInactiveTrait;
 use DeepWebSolutions\Framework\Core\Actions\Setupable\RunnablesOnSetupTrait;
 use DeepWebSolutions\Framework\Core\PluginComponents\AbstractPluginRoot;
+use DeepWebSolutions\Framework\Foundations\Helpers\HooksHelpersTrait;
 use DeepWebSolutions\Framework\Utilities\Actions\Initializable\InitializeDependenciesCheckerTrait;
 use DeepWebSolutions\Framework\Utilities\Dependencies\Checkers\HandlerChecker;
 use DeepWebSolutions\Framework\Utilities\Dependencies\DependenciesCheckerInterface;
@@ -26,6 +27,7 @@ final class Plugin extends AbstractPluginRoot {
 
 	use DependenciesServiceAwareTrait;
 	use InitializeDependenciesCheckerTrait;
+	use HooksHelpersTrait;
 	use SetupableInactiveTrait;
 	use RunnablesOnSetupTrait;
 

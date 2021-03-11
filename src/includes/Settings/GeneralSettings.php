@@ -2,18 +2,6 @@
 
 namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Settings;
 
-use DeepWebSolutions\Framework\Core\PluginComponents\AbstractPluginFunctionality;
-use DeepWebSolutions\Framework\Helpers\DataTypes\Strings;
-use DeepWebSolutions\Framework\Helpers\WordPress\Hooks\HooksHelpersAwareInterface;
-use DeepWebSolutions\Framework\Settings\Actions\Initializable\InitializeValidatedSettingsServiceTrait;
-use DeepWebSolutions\Framework\Settings\Actions\Setupable\SetupSettingsTrait;
-use DeepWebSolutions\Framework\Settings\SettingsService;
-use DeepWebSolutions\Framework\Settings\SettingsServiceAwareInterface;
-use DeepWebSolutions\Framework\Settings\SettingsServiceAwareTrait;
-use DeepWebSolutions\Framework\Utilities\Actions\Setupable\SetupHooksTrait;
-use DeepWebSolutions\Framework\Utilities\Hooks\HooksService;
-use DeepWebSolutions\Framework\Utilities\Validation\ValidationServiceAwareInterface;
-use DeepWebSolutions\Framework\Utilities\Validation\ValidationServiceAwareTrait;
 use DeepWebSolutions\Framework\Utilities\Validation\ValidationTypesEnum;
 
 defined( 'ABSPATH' ) || exit;
@@ -59,23 +47,32 @@ class GeneralSettings extends AbstractSettingsGroup {
 					),
 					'desc_tip' => _x( 'Only enabled payment methods can be selected', 'settings', 'dws-mapm-for-woocommerce' ),
 				),
-				'override-per-user'      => array(
-					'title'    => _x( 'Grant access per user', 'settings', 'dws-mapm-for-woocommerce' ),
+				'override-by-user-role'  => array(
+					'title'    => _x( 'Grant access through user roles', 'settings', 'dws-mapm-for-woocommerce' ),
 					'type'     => 'select',
 					'class'    => 'wc-enhanced-select',
-					'default'  => $this->get_default_value( 'general/override-per-user' ),
+					'default'  => $this->get_default_value( 'general/override-by-user-role' ),
+					'options'  => $this->get_supported_options( 'boolean' ),
+					'desc_tip' => _x( 'Users with certain roles will be granted full access to the locked payment methods.', 'settings', 'dws-mapm-for-woocommerce' ),
+				),
+				'override-by-user-meta'  => array(
+					'title'    => _x( 'Grant access through user fields', 'settings', 'dws-mapm-for-woocommerce' ),
+					'type'     => 'select',
+					'class'    => 'wc-enhanced-select',
+					'default'  => $this->get_default_value( 'general/override-by-user-meta' ),
 					'options'  => $this->get_supported_options( 'boolean' ),
 					'desc_tip' => _x( 'Adds controls for granting access to each locked payment method separately to each user\'s profile page. Access is granted for all future orders and all current unpaid orders.', 'settings', 'dws-mapm-for-woocommerce' ),
 				),
-				'override-per-order'     => array(
-					'title'    => _x( 'Grant access per order', 'settings', 'dws-mapm-for-woocommerce' ),
+				'override-by-order-meta' => array(
+					'title'    => _x( 'Grant access through order fields', 'settings', 'dws-mapm-for-woocommerce' ),
 					'type'     => 'select',
 					'class'    => 'wc-enhanced-select',
-					'default'  => $this->get_default_value( 'general/override-per-order' ),
+					'default'  => $this->get_default_value( 'general/override-by-order-meta' ),
 					'options'  => $this->get_supported_options( 'boolean' ),
 					'desc_tip' => _x( 'Adds controls for granting access to each locked payment method separately to each unpaid order. Access is granted only for the respective order.', 'settings', 'dws-mapm-for-woocommerce' ),
 				),
-			)
+			),
+			$enabled_gateways
 		);
 	}
 
@@ -96,8 +93,9 @@ class GeneralSettings extends AbstractSettingsGroup {
 			case 'locked-payment-methods':
 				$value = array_filter( (array) $value, 'is_string' );
 				break;
-			case 'override-per-user':
-			case 'override-per-order':
+			case 'override-by-user-role':
+			case 'override-by-user-meta':
+			case 'override-by-order-meta':
 				$value = $this->validate_value( $value, "general/{$field_id}", ValidationTypesEnum::BOOLEAN );
 				break;
 		}

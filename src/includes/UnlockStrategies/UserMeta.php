@@ -23,12 +23,6 @@ defined( 'ABSPATH' ) || exit;
  * @package DeepWebSolutions\WC-Plugins\ManuallyApprovedPaymentMethods\UnlockStrategies
  */
 class UserMeta extends AbstractUnlockStrategy {
-	// region TRAITS
-
-	use ActiveableLocalTrait;
-
-	// endregion
-
 	// region INHERITED METHODS
 
 	/**
@@ -40,7 +34,7 @@ class UserMeta extends AbstractUnlockStrategy {
 	 * @return  bool
 	 */
 	public function is_active_local(): bool {
-		return dws_wc_mapm_get_validated_general_option( 'override-per-user' );
+		return dws_wc_mapm_get_validated_general_option( 'override-by-user-meta' );
 	}
 
 	/**
@@ -54,10 +48,10 @@ class UserMeta extends AbstractUnlockStrategy {
 	public function register_hooks( HooksService $hooks_service ): void {
 		parent::register_hooks( $hooks_service );
 
-		$hooks_service->add_action( 'show_user_profile', $this, 'register_locked_payment_methods_options', 30 );
-		$hooks_service->add_action( 'edit_user_profile', $this, 'register_locked_payment_methods_options', 30 );
-		$hooks_service->add_action( 'personal_options_update', $this, 'save_locked_payment_methods_options' );
-		$hooks_service->add_action( 'edit_user_profile_update', $this, 'save_locked_payment_methods_options' );
+		$hooks_service->add_action( 'show_user_profile', $this, 'register_locked_payment_methods_fields', 30 );
+		$hooks_service->add_action( 'edit_user_profile', $this, 'register_locked_payment_methods_fields', 30 );
+		$hooks_service->add_action( 'personal_options_update', $this, 'save_locked_payment_methods_fields' );
+		$hooks_service->add_action( 'edit_user_profile_update', $this, 'save_locked_payment_methods_fields' );
 	}
 
 	// endregion
@@ -73,7 +67,7 @@ class UserMeta extends AbstractUnlockStrategy {
 	 *
 	 * @param   WP_User     $user       The user whose profile is currently being rendered.
 	 */
-	public function register_locked_payment_methods_options( WP_User $user ) {
+	public function register_locked_payment_methods_fields( WP_User $user ) {
 		if ( ! Users::has_capabilities( array( 'edit_user', Permissions::APPROVE_PAYMENT_METHODS_USER ) ) ) {
 			return;
 		}
@@ -88,24 +82,24 @@ class UserMeta extends AbstractUnlockStrategy {
 		<h2>
 			<?php esc_html_e( 'Manually Approved Payment Methods for WooCommerce', 'dws-mapm-for-woocommerce' ); ?>
 		</h2>
-		<table class="form-table" id="manually-approveable-payment-methods">
+		<table class="form-table" id="dws-manually-approveable-payment-methods">
 			<tbody>
 			<?php
 			foreach ( $locked_methods_ids as $locked_method_id ): // phpcs:ignore
-				$option_name = "dws_mapm_grant_access_{$locked_method_id}";
+				$field_id = "dws_mapm_grant_access_{$locked_method_id}";
 				?>
 				<tr>
 					<th>
 						<?php echo esc_html( $gateways[ $locked_method_id ]->title ); ?>
 					</th>
 					<td>
-						<label for="<?php echo esc_attr( $option_name ); ?>">
-							<input name="<?php echo esc_attr( $option_name ); ?>" type="checkbox" id="<?php echo esc_attr( $option_name ); ?>" value="1" <?php checked( get_user_meta( $user->ID, $option_name, true ), 'yes' ); ?>/>
+						<label for="<?php echo esc_attr( $field_id ); ?>">
+							<input name="<?php echo esc_attr( $field_id ); ?>" type="checkbox" id="<?php echo esc_attr( $field_id ); ?>" value="1" <?php checked( get_user_meta( $user->ID, $field_id, true ), 'yes' ); ?>/>
 							<?php
 							echo wp_kses_post(
 								sprintf(
 									/* translators: Name of the payment gateway. */
-									_x( 'Grant access to the <strong>%s</strong> payment method for this user?', 'user-profile', 'dws-mapm-for-woocommerce' ),
+									_x( 'Grant access to the <strong>%s</strong> payment method for this user?', 'user-meta-strategy', 'dws-mapm-for-woocommerce' ),
 									$gateways[ $locked_method_id ]->title
 								)
 							);
@@ -128,7 +122,7 @@ class UserMeta extends AbstractUnlockStrategy {
 	 *
 	 * @param   int     $user_id    The ID of the user whose profile was just saved.
 	 */
-	public function save_locked_payment_methods_options( int $user_id ) {
+	public function save_locked_payment_methods_fields( int $user_id ) {
 		if ( ! Users::has_capabilities( array( 'edit_user', Permissions::APPROVE_PAYMENT_METHODS_USER ) ) ) {
 			return;
 		}

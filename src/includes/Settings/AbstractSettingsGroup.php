@@ -12,6 +12,7 @@ use DeepWebSolutions\Framework\Settings\SettingsServiceAwareInterface;
 use DeepWebSolutions\Framework\Settings\SettingsServiceAwareTrait;
 use DeepWebSolutions\Framework\Utilities\Actions\Setupable\SetupHooksTrait;
 use DeepWebSolutions\Framework\Utilities\Hooks\HooksService;
+use DeepWebSolutions\Framework\Utilities\Logging\LoggingService;
 use DeepWebSolutions\Framework\Utilities\Validation\ValidationServiceAwareInterface;
 use DeepWebSolutions\Framework\Utilities\Validation\ValidationServiceAwareTrait;
 use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Settings;
@@ -36,6 +37,40 @@ abstract class AbstractSettingsGroup extends AbstractPluginFunctionality impleme
 	use SetupHooksTrait;
 	use SetupSettingsTrait;
 	use ValidationServiceAwareTrait;
+
+	// endregion
+
+	// region FIELDS AND CONSTANTS
+
+	/**
+	 * The title of the settings group.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @var     string
+	 */
+	protected string $group_title;
+
+	// endregion
+
+	// region MAGIC METHODS
+
+	/**
+	 * AbstractSettingsGroup constructor.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @param   LoggingService  $logging_service    Instance of the logging service.
+	 * @param   string          $group_title        Title of the settings group.
+	 * @param   string|null     $component_id       Unique ID of the settings page component. Optional.
+	 * @param   string|null     $component_name     English-name of the settings page component. Optional.
+	 */
+	public function __construct( LoggingService $logging_service, string $group_title, ?string $component_id = null, ?string $component_name = null ) {
+		parent::__construct( $logging_service, $component_id, $component_name );
+		$this->group_title = $group_title;
+	}
 
 	// endregion
 
@@ -66,7 +101,7 @@ abstract class AbstractSettingsGroup extends AbstractPluginFunctionality impleme
 		$settings_service->register_options_group(
 			'woocommerce',
 			'dws-mapm-for-woocommerce_' . $this->get_settings_group_slug_suffix(),
-			_x( $this->get_instance_name(), 'settings', 'dws-mapm-for-woocommerce' ), // phpcs:ignore
+			$this->group_title,
 			array( $this, 'get_settings_definition' ),
 			'checkout',
 			array( 'section' => 'dws-mapm' )

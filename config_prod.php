@@ -71,8 +71,13 @@ return array(
 
 	// Plugin
 	Plugin::class                     => autowire()->method( 'set_container', dws_wc_mapm_plugin_container() ),
-	Settings\GeneralSettings::class   => autowire()->constructorParameter( 'component_name', 'General Settings' ),
-	Settings\PluginSettings::class    => autowire()->constructorParameter( 'component_name', 'Plugin Settings' ),
+
+	Settings\GeneralSettings::class   => autowire()
+		->constructorParameter( 'component_name', 'General Settings' )
+		->constructorParameter( 'group_title', _x( 'General Settings', 'settings', 'dws-mapm-for-woocommerce' ) ),
+	Settings\PluginSettings::class    => autowire()
+		->constructorParameter( 'component_name', 'Plugin Settings' )
+		->constructorParameter( 'group_title', _x( 'Plugin Settings', 'settings', 'dws-mapm-for-woocommerce' ) ),
 
 	UnlockStrategies\OrderMeta::class => autowire()->constructorParameter( 'component_name', 'Order Meta Unlock Strategy' ),
 	UnlockStrategies\UserMeta::class  => autowire()->constructorParameter( 'component_name', 'User Meta Unlock Strategy' ),

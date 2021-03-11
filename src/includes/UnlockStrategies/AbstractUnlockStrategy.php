@@ -3,8 +3,7 @@
 namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\UnlockStrategies;
 
 use DeepWebSolutions\Framework\Core\PluginComponents\AbstractPluginFunctionality;
-use DeepWebSolutions\Framework\Settings\Actions\Initializable\InitializeSettingsServiceTrait;
-use DeepWebSolutions\Framework\Settings\Actions\Setupable\SetupSettingsTrait;
+use DeepWebSolutions\Framework\Foundations\States\Activeable\ActiveableLocalTrait;
 use DeepWebSolutions\Framework\Utilities\Actions\Setupable\SetupHooksTrait;
 use DeepWebSolutions\Framework\Utilities\Hooks\HooksService;
 use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\LockManager;
@@ -22,11 +21,22 @@ defined( 'ABSPATH' ) || exit;
 abstract class AbstractUnlockStrategy extends AbstractPluginFunctionality {
 	// region TRAITS
 
+	use ActiveableLocalTrait;
 	use SetupHooksTrait;
 
 	// endregion
 
 	// region INHERITED METHODS
+
+	/**
+	 * Checks whether the strategy is enabled or not.
+	 *
+	 * @since   1.0.0
+	 * @version 1.0.0
+	 *
+	 * @return  bool
+	 */
+	abstract public function is_active_local(): bool;
 
 	/**
 	 * Registers actions and filters with the hooks service.
@@ -37,11 +47,8 @@ abstract class AbstractUnlockStrategy extends AbstractPluginFunctionality {
 	 * @param   HooksService    $hooks_service      Instance of the hooks service.
 	 */
 	public function register_hooks( HooksService $hooks_service ): void {
-		$hooks_service->add_filter(
-			$this->get_container_entry( LockManager::class )->get_hook_tag( 'locked_payment_methods' ),
-			$this,
-			'maybe_grant_payment_methods_access'
-		);
+		$lock_manager = $this->get_container_entry( LockManager::class );
+		$hooks_service->add_filter( $lock_manager->get_hook_tag( 'locked_payment_methods' ), $this, 'maybe_grant_payment_methods_access' );
 	}
 
 	// endregion

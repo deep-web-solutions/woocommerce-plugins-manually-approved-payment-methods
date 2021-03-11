@@ -22,10 +22,10 @@ module.exports = function( grunt ) {
 						cwd             : '<%= dirs.code %>',
 						domainPath      : 'languages',
 						exclude         : [],
-						potFilename     : 'dws-wp-framework-bootstrapper.pot',
+						potFilename     : 'dws-mapm-for-woocommerce.pot',
 						mainFile        : 'bootstrap.php',
 						potHeaders      : {
-							'report-msgid-bugs-to'  : 'https://github.com/deep-web-solutions/wordpress-framework-bootstrapper/issues',
+							'report-msgid-bugs-to'  : 'https://github.com/deep-web-solutions/woocommerce-plugins-manually-approved-payment-methods/issues',
 							'project-id-version'    : '<%= package.title %> <%= package.version %>',
 							'poedit'     		    : true,
 							'x-poedit-keywordslist' : true,
@@ -33,17 +33,10 @@ module.exports = function( grunt ) {
 						processPot      : function( pot ) {
 							delete pot.headers['x-generator'];
 
-							// include the default value of the constant DWS_WP_FRAMEWORK_WHITELABEL_NAME
-							pot.translations['']['DWS_WP_FRAMEWORK_WHITELABEL_NAME'] = {
-								msgid: 'Deep Web Solutions',
-								comments: { reference: 'bootstrap-whitelabel.php:8' },
-								msgstr: [ '' ]
-							};
-
-							// include the default value of the constant DWS_WP_FRAMEWORK_BOOTSTRAPPER_NAME
-							pot.translations['']['DWS_WP_FRAMEWORK_BOOTSTRAPPER_NAME'] = {
-								msgid: 'Deep Web Solutions: Framework Bootstrapper',
-								comments: { reference: 'bootstrap.php:38' },
+							// include the default value of the constant DWS_WC_MAPM_PLUGIN_NAME
+							pot.translations['']['DWS_WC_MAPM_PLUGIN_NAME'] = {
+								msgid: 'Deep Web Solutions: Manually Approved Payment Methods for WooCommerce',
+								comments: { reference: 'bootstrap.php:64' },
 								msgstr: [ '' ]
 							};
 

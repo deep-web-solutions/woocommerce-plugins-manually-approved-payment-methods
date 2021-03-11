@@ -30,7 +30,6 @@
 namespace DeepWebSolutions\WC_Plugins;
 
 use DeepWebSolutions\Framework\Core\PluginComponents\Exceptions\FunctionalityInitFailureException;
-use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Admin\Settings;
 use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Plugin;
 use DI\Container;
 use DI\ContainerBuilder;
