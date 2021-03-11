@@ -1,6 +1,6 @@
 <?php
 
-namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Admin;
+namespace DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods;
 
 use DeepWebSolutions\Framework\Core\Actions\Installable;
 use DeepWebSolutions\Framework\Core\Actions\InstallableInterface;
@@ -12,7 +12,8 @@ use DeepWebSolutions\Framework\Settings\SettingsService;
 use DeepWebSolutions\Framework\Settings\SettingsServiceAwareInterface;
 use DeepWebSolutions\Framework\Settings\ValidatedSettingsServiceAwareTrait;
 use DeepWebSolutions\Framework\Utilities\Validation\ValidationServiceAwareInterface;
-use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Admin\Settings\GeneralSettings;
+use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Settings\GeneralSettings;
+use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Settings\PluginSettings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,7 +23,7 @@ defined( 'ABSPATH' ) || exit;
  * @since   1.0.0
  * @version 1.0.0
  * @author  Antonius Hegyes <a.hegyes@deep-web-solutions.com>
- * @package DeepWebSolutions\WC-Plugins\ManuallyApprovedPaymentMethods\Admin
+ * @package DeepWebSolutions\WC-Plugins\ManuallyApprovedPaymentMethods
  */
 class Settings extends AbstractPluginFunctionality implements InstallableInterface, SettingsServiceAwareInterface, ValidationServiceAwareInterface {
 	// region TRAITS
@@ -48,7 +49,7 @@ class Settings extends AbstractPluginFunctionality implements InstallableInterfa
 	 * @return  string[]
 	 */
 	protected function get_di_container_children(): array {
-		return array( GeneralSettings::class );
+		return array( GeneralSettings::class, PluginSettings::class );
 	}
 
 	/**
@@ -151,7 +152,7 @@ class Settings extends AbstractPluginFunctionality implements InstallableInterfa
 	 * @return  Installable\UninstallFailureException|null
 	 */
 	public function uninstall( string $current_version ): ?Installable\UninstallFailureException {
-		$remove_data = dws_wc_mapm_get_validated_option( 'general_remove-data-uninstall' );
+		$remove_data = dws_wc_mapm_get_validated_option( 'plugin_remove-data-uninstall' );
 
 		if ( true === $remove_data ) {
 			$result = $GLOBALS['wpdb']->query( "DELETE FROM {$GLOBALS['wpdb']->options} WHERE option_name LIKE 'dws-mapm-for-woocommerce_%'" ); // phpcs:ignore

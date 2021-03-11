@@ -12,6 +12,8 @@ use DeepWebSolutions\Framework\Utilities\Logging\LoggingService;
 use DeepWebSolutions\Framework\Utilities\Validation\ValidationService;
 use DeepWebSolutions\Framework\WooCommerce\Settings\WC_Handler;
 use DeepWebSolutions\Framework\WooCommerce\Utilities\WC_Logger as DWS_WC_Logger;
+use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Settings;
+use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\UnlockStrategies;
 use DeepWebSolutions\WC_Plugins\ManuallyApprovedPaymentMethods\Plugin;
 use DI\ContainerBuilder;
 use function DeepWebSolutions\WC_Plugins\dws_wc_mapm_plugin_container;
@@ -23,17 +25,17 @@ defined( 'ABSPATH' ) || exit;
 
 return array(
 	// Foundations
-	PluginInterface::class      => get( Plugin::class ),
+	PluginInterface::class            => get( Plugin::class ),
 
 	// Utilities
-	HooksService::class         => factory(
+	HooksService::class               => factory(
 		function( Plugin $plugin, LoggingService $logging_service, HooksHandler $handler ) {
 			$hooks_service = new HooksService( $plugin, $logging_service, $handler );
 			$plugin->register_runnable_on_setup( $hooks_service );
 			return $hooks_service;
 		}
 	),
-	LoggingService::class       => factory(
+	LoggingService::class             => factory(
 		function( PluginInterface $plugin ) {
 			$loggers = array();
 
@@ -51,16 +53,16 @@ return array(
 	),
 
 	// Core
-	Installation::class         => autowire()->constructorParameter( 'component_name', 'Installation' ),
-	Internationalization::class => autowire()->constructorParameter( 'component_name', 'Internationalization' ),
+	Installation::class               => autowire()->constructorParameter( 'component_name', 'Installation' ),
+	Internationalization::class       => autowire()->constructorParameter( 'component_name', 'Internationalization' ),
 
 	// Settings
-	SettingsService::class      => factory(
+	SettingsService::class            => factory(
 		function( Plugin $plugin, LoggingService $logging_service ) {
 			return new SettingsService( $plugin, $logging_service, array( new WC_Handler(), new MetaBox_Handler() ) );
 		}
 	),
-	ValidationService::class    => factory(
+	ValidationService::class          => factory(
 		function( Plugin $plugin, LoggingService $logging_service ) {
 			$container = ( new ContainerBuilder() )->addDefinitions( __DIR__ . '/src/configs/settings.php' )->build();
 			return new ValidationService( $plugin, $logging_service, $container );
@@ -68,5 +70,11 @@ return array(
 	),
 
 	// Plugin
-	Plugin::class               => autowire()->method( 'set_container', dws_wc_mapm_plugin_container() ),
+	Plugin::class                     => autowire()->method( 'set_container', dws_wc_mapm_plugin_container() ),
+	Settings\GeneralSettings::class   => autowire()->constructorParameter( 'component_name', 'General Settings' ),
+	Settings\PluginSettings::class    => autowire()->constructorParameter( 'component_name', 'Plugin Settings' ),
+
+	UnlockStrategies\OrderMeta::class => autowire()->constructorParameter( 'component_name', 'Order Meta Unlock Strategy' ),
+	UnlockStrategies\UserMeta::class  => autowire()->constructorParameter( 'component_name', 'User Meta Unlock Strategy' ),
+	UnlockStrategies\UserRole::class  => autowire()->constructorParameter( 'component_name', 'User Role Unlock Strategy' ),
 );

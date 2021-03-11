@@ -101,7 +101,7 @@ class Permissions extends AbstractPluginFunctionality implements InstallableInte
 	 * @return  Installable\UninstallFailureException|null
 	 */
 	public function uninstall( string $current_version ): ?Installable\UninstallFailureException {
-		$remove_data = dws_wc_mapm_get_validated_option( 'general_remove-data-uninstall' );
+		$remove_data = dws_wc_mapm_get_validated_option( 'plugin_remove-data-uninstall' );
 
 		if ( true === $remove_data ) {
 			$default_caps = self::get_reflection_class()->getConstants();
